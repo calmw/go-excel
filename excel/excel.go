@@ -24,7 +24,6 @@ func ListToExcel(list interface{}, title, sheetName string) *excelize.File {
 		lines = s.Len()
 		for i := 0; i < lines; i++ {
 			val := s.Index(i)
-			//fmt.Println(val)
 			if i == 0 {
 				st := reflect.TypeOf(val.Interface())
 				for j := 0; j < st.NumField(); j++ {
@@ -35,13 +34,13 @@ func ListToExcel(list interface{}, title, sheetName string) *excelize.File {
 						desc := TagField(tag, "desc")
 						width := TagField(tag, "width")
 						w, _ := strconv.ParseFloat(width, 10)
-						fielditem := Field{
+						fieldItem := Field{
 							Name:   field.Name,
 							Column: column,
 							Desc:   desc,
 							Width:  w,
 						}
-						fieldList = append(fieldList, fielditem)
+						fieldList = append(fieldList, fieldItem)
 					}
 				}
 			}
@@ -57,6 +56,8 @@ func ListToExcel(list interface{}, title, sheetName string) *excelize.File {
 				_ = f.SetColWidth("Sheet1", item.Column, item.Column, item.Width)
 			}
 		}
+	default:
+		log.Println("unhandled kind")
 	}
 
 	//标题
@@ -66,7 +67,6 @@ func ListToExcel(list interface{}, title, sheetName string) *excelize.File {
 		//合并
 		_ = f.MergeCell("Sheet1", "A1", maxCol+"1")
 		//格式:居中
-		//style1, _ := f.NewStyle(`{"alignment":{"horizontal":"center"}}`)
 		style1, _ := f.NewStyle(&excelize.Style{
 			Border: nil,
 			Fill:   excelize.Fill{},
@@ -95,9 +95,6 @@ func ListToExcel(list interface{}, title, sheetName string) *excelize.File {
 		_ = f.SetCellValue("Sheet1", item.Column+strconv.Itoa(1+titleLines), item.Desc)
 	}
 	//格式,有边框,单元格居中
-	//sty := `{"border":[{"type":"left","color":"000000","style":1},{"type":"top","color":"000000","style":1},{"type":"bottom","color":"000000","style":1},{"type":"right","color":"000000","style":1}],
-	//	"alignment":{"horizontal":"center"}}`
-	//style, err := f.NewStyle(sty)
 	style, err := f.NewStyle(&excelize.Style{
 		Border: []excelize.Border{
 			{
@@ -140,13 +137,7 @@ func ListToExcel(list interface{}, title, sheetName string) *excelize.File {
 	}
 	_ = f.SetCellStyle("Sheet1", "A"+strconv.Itoa(1+titleLines), maxCol+strconv.Itoa(lines+1+titleLines), style)
 	//冻结0列2行
-	//_ = f.SetPanes("Sheet1", `{
-	//	"freeze": true,
-	//	"x_split": 0,
-	//	"y_split": `+strconv.Itoa(1+titleLines)+"}",
-	//)
-	// sheet string, panes *Panes
-	_ = f.SetPanes("Sheet1", &excelize.Panes{
+	err = f.SetPanes("Sheet1", &excelize.Panes{
 		Freeze:      true,
 		Split:       false,
 		XSplit:      0,

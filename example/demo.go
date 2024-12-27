@@ -1,5 +1,9 @@
 package main
 
+import (
+	"github.com/calmw/go-excel/excel"
+)
+
 // 通过excelize将列表转换成excel文件
 func main() {
 	list := make([]User, 0)
@@ -19,8 +23,8 @@ func main() {
 		Address: "长沙开福区",
 	}
 	list = append(list, user1, user2, user3)
-	f := xjexcel.ListToExcel(list, "员工信息表", "员工表")
-	f.SaveAs("/员工表.xls")
+	f := excel.ListToExcel(list, "员工信息表", "员工表")
+	_ = f.SaveAs("./test.xlsx")
 }
 
 type User struct {
