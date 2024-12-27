@@ -4,8 +4,8 @@ import (
 	"github.com/calmw/go-excel/excel"
 )
 
-// 通过excelize将列表转换成excel文件
 func main() {
+	// 将列表转换成excel文件
 	list := make([]User, 0)
 	user1 := User{
 		Name:    "张三",
